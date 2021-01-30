@@ -1,2 +1,2 @@
-# data_science_live
+# Data Science Live
 Tutorial R Code from the live streams
