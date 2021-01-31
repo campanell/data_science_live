@@ -1,0 +1,133 @@
+---
+title: 'Episode 7: Style a plot with bbplot'
+author: Mr. Campanell
+date: '2020-06-12'
+categories:
+  - R
+  - Video
+slug: styleaplotwithbbplot
+---
+
+## Episode 7: Style a plot with bbplot
+
+Mr. Campanell is going to naively pretend to know something about data journalism.   Data journalism has transformed itself in recent years with advances in open data initiatives, graphics packages such as ggplot2, and storytelling with data.
+
+Many leading global news organizations such as Financial Times, Washington Post, and BBC News have a staff of data journalists that combine skills of data analysis, writing, graphic design, and programming. 
+
+In this episode, we will use the bbplot style template from the BBC News data team.   We will continue to use the OECD fertility rates data set.
+
+###  All the libraries
+
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(bbplot)
+
+```
+
+### Re-use the code from Episode 6
+
+We are going to re-use the code from [https://datasciencelive.com/post/2020/06/05/gettingstartedwithggplot2/](Episode 6) by copy & paste into the first cell.  We started with the OECD fertility data back in Episode 3 and have been building up a library of code using different packages for reading data, data cleaning, transformation, and graphics.
+
+```{r}
+#-------------  Read OECD File  -------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls",skip=3,n_max=42) %>%
+        rename(country = 2)
+
+#-------  Carry forward 2009 value   ----------------#
+oecd_cf <- oecd %>%
+           mutate(`2010` = if_else(is.na(`2010`)==TRUE,`2009`,`2010`))
+
+#--------  Select the decades   ----------------#
+decades <- oecd_cf %>%
+           select(country, ends_with('0'))
+
+#-------  Reshape data with pivot_longer  -----------------#
+new_oecd <- decades %>%
+            pivot_longer(ends_with('0'),names_to="year",values_to = "rate")
+
+#---------  Reshape again with pivot_wider ------------------#
+final_oecd <- new_oecd %>%
+              pivot_wider(names_from = country,values_from=rate)
+
+#-----------  Mexico  -----------------------------#
+mexico <- final_oecd %>%
+          select(year,Mexico)
+
+#------------  Two Countries   -----------------------#
+jk <- new_oecd %>%
+      filter(country %in% c('Japan','Korea'))
+
+```
+
+
+###  The bbplot package
+
+The [https://github.com/bbc/bbplot](bbplot package) is only available on github.   You will need to follow the instructions on how to install it using the devtools R package.   It is one of the more complicated packages to install.   The documentation is solid because it is written by elite data journalists and this makes it easier to follow.
+
+There is also a [https://bbc.github.io/rcookbook/](companion cookbook) page with code examples which is referenced throughout this episode.
+
+
+### Style Mexico plot
+
+Using bbplot to style the simple line plot from Episode 6.  We will add color to the line and points, set a size to each for eye grabbing attention, and add a headline title and data subtitle.
+
+We use the bbc_style template for the plot's style guide.
+
+```{r warning = FALSE}
+ggplot(data=mexico, aes(x=year, y=Mexico, group=1)) +
+          geom_line(colour = "#1380A1", size = 1.5) +
+          geom_point(colour = "#1380A1",size=3) + 
+          bbc_style() +
+          labs(title="The Shrinking Family",
+               subtitle="Mexico Fertility Rates, 1970-2010")
+
+```
+
+### Create a graphic using finalise_plot
+
+bbplot has another function to create a graphic which can be used for your digital production.   You can format the output height and width.   The nice feature is footnotes for the data source and an option to add your organization's logo.
+
+In this plot, we use the Japan and Korea line plot we created in Episode 6. The lines are colored with the scale_colour_manual geom and we add a horizontal reference line at 1 with a grey color.
+
+The finalise_plot function in bbplot creates a graphic with a width of 640 and height of 450, saves it to my downloads folder and adds footnotes for the OECD data source and the Data Science Live mascot logo.
+
+```{r warning = FALSE}
+#------------ Plot both countries   ---------------#
+jkplot <- ggplot(data=jk,aes(x=year,y=rate, group=country, color=country)) +
+          geom_line(size = 1.5) +
+          geom_point(size=3) +
+          geom_hline(yintercept = 1, size = 1, colour="#333333") +
+          scale_colour_manual(values = c("#FAAB18", "#1380A1")) +
+          bbc_style() +
+          labs(title="What Happened To The Family?",
+          subtitle="Fertility Rates for Japan & Korea, 1970-2010")
+          
+jkplot
+
+finalise_plot(plot_name = jkplot,
+              source = "Source: OECD Factbook 2013",
+              save_filepath = "c:/Users/Campanell/Downloads/jk.png",
+              width_pixels = 640,
+              height_pixels = 450,
+              logo_image_path = "c:/Users/Campanell/Downloads/yiyi50.png")
+
+
+
+```
+
+
+### Mukbang
+
+Laska is a Southeast Asian curry.  It is highly popular in Malaysia, Indonesia, and Singapore.   My version has long bean and shitake mushrooms with medium wide noodles.
+
+![Curry Laska](/post/2020-06-12-styleaplotwithbbplot.en_files/laska.jpg){width=512px height=384px}
+
+
+### Episode 6 Video Tutorial
+
+```{r}
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/0M5sEF55GRE\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+```

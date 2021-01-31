@@ -1,0 +1,104 @@
+---
+title: 'Episode 3: Select'
+author: Mr. Campanell
+date: '2020-05-15'
+slug: episode3select
+categories:
+  - Video
+  - R
+tags:
+  - dplyr
+  - select
+  - tutorial
+  - R
+  - data science live
+  - article
+---
+
+## Episode 3: Select
+
+Select is the dplyr function for managing your columns. It becomes handy when you are working with source data files that have many columns.   It can help break the large data file into smaller manageable data frames.
+
+In Episode 1, we used filter to subset on rows within a data frame.   In this episode, we will use filter's sibling function, select, to subset on columns within a data frame.
+
+### Data: OECD fertility rates by country.
+
+The OECD is an international organization which acts as a statistical agency for the world's most developed countries.   They have a large resource of public data around economics and human development.
+
+This episode uses [Total Fertility Rates](https://www.oecd-ilibrary.org/sites/factbook-2013-en/tables/factbook-2013-table9-en/index.html?itemId=/content/component/factbook-2013-table9-en) from the OECD 2012 Factbook.  They define fertility rate as the number of children born to women aged 15 to 49.
+
+We downloaded the Excel file for this episode.
+
+### Read data
+
+I am reading the downloaded file on my PC.  Pay attention to the two option.  The first is telling readxl that the NA missing data is coded as ".." in the Excel file.  The second is telling readxl to skip the first 3 lines and start to reading the column headers on line 4.   This is common is many Excel data files that serve as reports.
+
+Rename the second column to something that makes sense.
+
+```{r}
+library(readxl)
+
+oecd <- read_xls("C:/Users/Campanell/Downloads/oecd.xls",na="..",skip=3)
+
+#----------  Rename the second column   -------------------#
+names(oecd)[2] <- "country"
+
+```
+
+### Basic select 
+
+Using a basic select function where I input the column names I want in my data frame.
+
+```{r}
+library(dplyr)
+
+basic <- oecd %>%
+         select(country, `1970`, `1980`,`1990`,`2010`)
+
+```
+
+### Select helper commands
+
+These select helper commands gives you shortcuts to prune your data frame columns.   They are useful when your initial data frame has many columns and there are patterns to these columns.
+
+### Ends with
+
+```{r}
+
+decades <- oecd %>%
+           select(ends_with('0'))
+```
+
+### Starts with
+```{r}
+
+lastcent  <- oecd %>%
+             select(starts_with('19'))
+```
+
+### Contains
+```{r}
+
+noughties <- oecd %>%
+             select(country,contains('20'))
+```
+
+### Number range
+```{r}
+
+all20 <- oecd %>%
+         select(country,num_range(prefix="200",range=(1:6)))
+```
+
+### Mukbang
+
+This week's mukbang episode is Japanese Hambagu, aka hamburger.   It is a meat patty with special sauce.   The sauce is primarily Japanese Worcestershire sauce and ketchup.  The Worcestershire sauce is sweeter, thicker, and fruitier than its British counterpart. 
+
+![Japanese hambagu with white rice](/post/2020-05-15-episode-3-select_files/hambagu.jpg){width=512px height=512px}
+
+### Episode 3 Video Tutorial
+
+```{r}
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/RJZwoEdEipk\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+```
+

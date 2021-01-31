@@ -1,0 +1,105 @@
+---
+title: 'Episode 8: Join Data Frames'
+author: Mr. Campanell
+date: '2020-06-19'
+slug: joindataframes
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 8: Joining data frames
+
+One of the most important skills in data science is understanding how to join data frames.  
+
+This episode will use functions from dplyr to perform data frame joins
+
+### Data source: UN FAO 
+
+We use two data sets from the United Nation Food and Agriculture Organisation (UNFAO).   The UNFAO has a [http://www.fao.org/faostat/en/#data](beautiful data website) to create data sets for analysis.  
+
+I've created two data frames from the UNFAO data site and downloaded them to datasciencelive.com.   We will used read_csv to read them from the website.
+
+```{r}
+library(readr)
+
+#--------------   Read Data  --------------------------------#
+production <- read_csv("http://datasciencelive.com/data/FAOSTAT_production.csv")
+
+consumption <- read_csv("http://datasciencelive.com/data/FAOSTAT_consumption.csv")
+
+```
+
+###  Production data source
+
+The first data source is pig production for China, United States, and the European Union.   The data files has multiple units of pig production measures by country and year.   We want to filter where the unit of measure is head.
+
+Once it is filtered on the unit of measure we want to analyze, we will reduce the data frame to select on the most useful columns for analysis.   
+
+We will rename the columns to identify which data frame they are sourced when we join the two data frames together.
+
+```{r}
+library(dplyr)
+
+#-------------   Head  ------------------------------------#
+head <- production %>%
+        filter(Unit == 'Head')
+
+#-------  Reduce data   ------------------------------#
+head_reduce <- head %>%
+               select(Area, Year, Unit, Value, `Flag Description`) %>%
+               rename(Region = Area,
+                      Production_unit = Unit,
+                      Production_value = Value,
+                      Production_desc = `Flag Description`)
+
+```
+
+### Consumption data source
+
+We will do the same thing for the consumption data frame.   This is reducing the number of columns and rename them to identify the source data frame.
+
+```{r}
+consumption_reduce <- consumption %>%
+                      select(Country, Year, Unit, Value, `Flag Description`) %>%
+                      rename(Region = Country,
+                             Consumption_unit = Unit,
+                             Consumption_value = Value,
+                             Consumption_desc = `Flag Description`)
+
+```
+
+###  Join data frames
+
+We do an inner_join on both the production and consumption data.  The columns were we join are Region and Year.   My practice is to use the data frame with the highest number of observations as the first data frame in the inner_join function.   In this case it is t he production data frame. 
+
+When all the records of the production data frame are not joined with consumption data frame, I use the anti_join function to see what records are not joined.   In this case there was a difference in the Year column.   The consumption data frame went up to 2013 and records past 2013 from the production data frame were not joined.
+
+```{r}
+
+#------------  Join data frames   -----------------------------#
+pig_prod_consumption <- inner_join(head_reduce,consumption_reduce, by=c("Region","Year"))
+
+
+#--------   Records not joined   -------------------------------#
+not_joined <- anti_join(head_reduce,consumption_reduce, by=c("Region","Year"))
+
+```
+
+
+### Mukbang
+
+It is pasta this week.  I went with an Italian-American classic, linguine with clam sauce.  
+
+![Linguine with white clam sauce](/post/2020-06-19-joindataframes.en_files/clamsauce.jpg){width=512px height=384px}
+
+
+
+### Episode 8 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/ax048Nwo4RE\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```

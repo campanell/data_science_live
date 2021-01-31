@@ -1,0 +1,87 @@
+---
+title: 'Episode 15: Conditional Statements'
+author: Mr. Campanell
+date: '2020-08-10'
+slug: conditionalstatements
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 15: Conditional Statements
+
+This is an introduction into conditional statements with the dplyr functions, case_when and if_else. These are used to group continuous numerical data into categorical values. 
+
+### Reuse the data sets from Episode 14.
+
+We will build upon our work from Episode 14.  We will reuse the code to build out the data frames which serve as the base data for this episode's conditional statements.
+
+```{r}
+library(jsonlite)
+library(dplyr)
+
+#----- Load data from URL  ----------------#
+resp <- fromJSON(txt="https://data.austintexas.gov/resource/7d8e-dm7r.json?month=7&year=2020")
+
+micromobility <- resp %>%
+                 mutate(trip_distance = as.integer(trip_distance)) %>%
+                 mutate(duration_min = as.integer(trip_duration)/60) %>%
+                 select(device_id,vehicle_type,trip_distance,duration_min)
+
+#------------  Bucket ranks ----------------------#
+buckets <- micromobility %>%
+           summarise(trip_group = ntile(duration_min,3))
+
+micro_buckets <- bind_cols(micromobility,buckets)
+
+#----------------   Percent ranks  ------------------------------#
+pct_rank <- micromobility %>%
+            summarise(pct_rank = percent_rank(duration_min))
+
+pctbucket <- bind_cols(micromobility,pct_rank)
+
+```
+
+#### Case_when statement
+
+This example will convert the numeric values used to group the trip duration into three buckets.   Those buckets are coded as 1,2,3.   However, we would like those buckets to be more descriptive about the trip duration group.  
+
+The case_when statement is used to recode the trip duration groups into short, medium, and long trips.
+
+```{r}
+
+#-------------  Name bucket groups  ----------------------------------#
+trip_type <- micro_buckets %>%
+             mutate(type = case_when(
+                    trip_group == 1 ~ 'short',
+                    trip_group == 2 ~ 'medium',
+                    trip_group == 3 ~ 'long'
+  ))
+
+```
+
+#### If_else statement
+
+We will take the trip duration percentile ranks and create two groups, top half and bottom half.   We use the if_else statement to define the groups at the mid point.
+
+```{r}
+#----------   Split on Percent Rank --------------------#
+split_it  <- pctbucket %>%
+             mutate(even_split = if_else(pct_rank > .5,'top half','bottom half')) %>%
+             arrange(pct_rank)
+```
+
+### Mukbang
+
+My videos on Afreeca have more views per video than any other service.   In celebration, my mukbang is KFC, Korean Fried Chicken wings.   These are double fried and tossed with a sweet and slightly spicy sauce.  After all, mukbang is one of the most popular genres on Afreeca.
+
+![Korean Fried Chicken wings](/post/2020-08-10-conditionalstatements.en_files/kfc.jpg){width=512px height=384px}
+
+### Episode 15 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/FApSnGcro5c\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```

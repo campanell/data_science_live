@@ -1,0 +1,89 @@
+---
+title: 'Episode 16: Handling Missing Data'
+author: Mr. Campanell
+date: '2020-08-18'
+slug: handlingmissingdata
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 16: Handling Missing Data
+
+This episode features the tidyverse functions used to handle missing data.   This includes dropping rows, filling in missing with data frame values, and replacing missing values. 
+
+Missing data is found in most real world data sets, so it is important to learn the functions necessary to handle them.
+
+### OECD fertility data 
+
+We return back to the OECD fertility data set.  For this episode, we will reduce the data frame down to three columns, country, 1970, 2010.   These years have missing data.
+
+There is a copy of the data file on datasciencelive.com  [https://datasciencelive.com/data/oecd.xls](https://datasciencelive.com/data/oecd.xls)
+
+There is more about the parameters used to read the file in [https://datasciencelive.com/post/2020/05/22/episode4cleanexceldata/](Episode 4)
+
+```{r}
+
+library(dplyr)
+library(tidyr)
+library(readxl)
+
+#---------  Read OECD data -----------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls",skip=3,n_max=42) %>%
+        rename(country = 2)
+
+oecd_reduced <- oecd %>%
+                select(country,`1970`,`2010`)
+
+```
+
+### Removing rows
+
+In many of the models used in R, it is important to have data without any missing values. In those cases, it may be convenient to remove the rows. This can be down with the drop_na function.
+
+We will create a validation data frame to check which countries were dropped because of missing values with the anti_join function.
+
+```{r}
+#------- drop rows with missing values  ---------#
+missing_oecd <- oecd_reduced %>%
+                drop_na()
+
+missing_countries <- anti_join(oecd_reduced,missing_oecd,by=("country"))
+
+```
+
+###  Filling in missing values
+
+The fill function will allow you to replace a missing value with the previous or the next value in the column.   It is using the fill function for the 1970 column
+
+```{r}
+#------------ Fill in missing values -----------------#
+fill_missing <- oecd_reduced %>%
+                fill(`1970`,.direction = c("down"))
+```
+
+### Replace missing values
+
+This example will replace the missing values with the OECD average value for both columns.   The OECD value is in row 36.   The replace_na function requires a list of values to be used as the replacement values.
+
+```{r}
+#----------- Replace missing values -----------------#
+replace_missing <- oecd_reduced %>%
+                   replace_na(replace= list(`1970`=oecd_reduced$`1970`[36],`2010`=oecd_reduced$`2010`[36]))
+
+```
+
+### Mukbang
+
+Vietnamese spicy grilled chicken with rice noodles, vegetables, and nuoc nam sauce.
+
+![Vietnamese grilled chicken with rice noodles](/post/2020-08-18-handlingmissingdata.en_files/vietnoodles.jpg){width=512px height=384px}
+
+### Episode 16 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/Wvv6Gvc6mMM\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```

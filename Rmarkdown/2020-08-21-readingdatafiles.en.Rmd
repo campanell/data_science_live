@@ -1,0 +1,92 @@
+---
+title: 'Episode 17: Reading Data Files'
+author: Mr. Campanell
+date: '2020-08-21'
+slug: readingdatafiles
+description: Useful parameter arguments when reading external data files.
+categories:
+  - R
+  - Video
+tags:
+  - readr
+---
+
+## Episode 17: Reading Data Files
+
+This episode will highlight useful parameter arguments used for reading external data files.   It includes skipping rows, subsetting rows, and renaming columns.
+
+### Data file
+
+We will use the Seattle Public Art data file.   The file can be downloaded at [https://datasciencelive.com/data/Public_Art_Data.csv](https://datasciencelive.com/data/Public_Art_Data.csv)
+
+```{r}
+
+#---------------------   Read initial data file  -------------------------------#
+library(readr)
+
+public_art <- read_csv("https://datasciencelive.com/data/Public_Art_Data.csv")
+
+```
+
+### Subsetting data
+
+We will read in the first 100 rows using the n_max argument 
+
+```{r}
+
+#----------------------------   Read first 100 rows  --------------------------------#
+public_art_100  <- read_csv("https://datasciencelive.com/data/Public_Art_Data.csv", n_max=100)
+
+```
+### Removing the column headers
+
+This example will remove the column headers and replace them with the default R column names which start with an X and are followed by a number. 
+
+```{r}
+
+#------------  No Header   ----------------------------------#
+public_art_x <- read_csv("https://datasciencelive.com/data/Public_Art_Data.csv", col_names = FALSE)
+
+```
+One important note about the col_names = FALSE argument is read_csv will make all data types character.   Notice the latitude (X13) and longitude (X14) were numeric values in our previous data frames, but now are character.
+
+You need to pay attention to the data types when using the readr arguments.
+
+### Skip first 100 rows
+
+We want to skip the rows and start at a specific place in the data files, so let's use the skip argument.  However, we will need to include the col_names = FALSE argument because readr will use the row's previous row as the column names.
+
+```{r}
+
+#-------------   Skip the first 100 rows   -----------------------#
+public_art_skip <- read_csv("https://datasciencelive.com/data/Public_Art_Data.csv", skip=100, col_names = FALSE)
+
+```
+
+###  Rename the first 4 columns   
+
+We will rename the first 4 columns with the col_names argument. In addition to renaming the columns, the argument will also select the renamed columns.   This means that columns 5-15 will not be included in the data frame.   If you need these columns, you will need to name all of them in the col_names argument.   
+
+```{r}
+#----------  Column names first 4 ------------------#
+public_art_names <- read_csv("https://datasciencelive.com/data/Public_Art_Data.csv", col_names = c("id","commission","firstname","lastname"))
+
+```
+The readr package has a handy utility function called problems().   You can use it to debug issues with reading in the data file.
+```{r}
+problems(public_art_names)
+```
+
+### Mukbang: Filipino Adobo
+
+My brother-in-law, Chef Lou made this traditional Filipino dish and it is one of its national dishes.   Adobo is the first Filipino dish which I discovered. 
+
+![Filipino Adobo](/post/2020-08-21-readingdatafiles.en_files/adobo.jpg){width=512px height=384px}
+
+### Episode 17 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/RwWDTENIpZY\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```

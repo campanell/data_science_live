@@ -1,0 +1,86 @@
+---
+title: 'Episode 2: Install Packages'
+author: Mr. Campanell
+date: '2020-05-08'
+slug: episode2installpackages
+categories:
+  - Video
+  - R
+tags:
+  - dplyr
+  - readr
+  - stringr
+  - install.package
+  - lubridate
+  - tidyr
+---
+
+## Episode 2: Install Packages
+
+The great thing about the R programming languages is the volume of all the packages which you can use.  Think of packages as your tools for R.   As of this writing, there are over 15,000 package in the CRAN repository.   In addition to CRAN, there are other specialized repositories such as Bioconductor which as R packages for genomic data.
+
+This episode is going to focus on installing the core tidyverse packages.   These packages are the basic data arts which allow you to build, shape, sculpt, and detail your data frames.
+
+### Install dplyr
+
+This package is the most versatile for manipulating your data frame.  Its functions filter (Watch Episode 1), select, mutate make it easy to create the data frames needed to perform an analysis.
+
+```{r}
+#install.packages("dplyr")
+
+```
+
+### Install tidyr
+
+Tidyr is a package to transform your data frames. You can convert rows into columns or turn columns into rows.  This package will come in handy when you have very messy data such as a collection of Excel files.
+
+```{r}
+#install.packages("tidyr")
+
+```
+
+### Install lubridate
+
+Handling data in date formats can be tricky.  Your data may be in a timestamp which combines both the date and time, and you only need the date.  Dealing with leap years, time zones, daylight savings time are a few of quirks you will encounter with date & time data types.  
+
+And if your date type data is created from a Unix server, there is the POSIX datetime snake pit to stare into with fear.   Lubridate will help make date time handling a lot easier.
+
+```{r}
+#install.packages("lubridate")
+```
+
+### Install readr
+
+Readr is a wonderful package which lets you import data files into your R Studio session.  You can read in multiple data formats.   It even allows you to read in data on the Internet with just a URL address (Watch Episode 1). 
+
+If your data is in Excel, there is a sibling package called readxl.
+
+```{r}
+#install.packages("readr")
+#install.packages("readxl")
+```
+
+### Install stringr
+
+If you need to manipulate text data types such as names, addresses, product descriptions, specifications, stringr gives you some handy functions to do it.
+
+You can pull out parts of the text such as separating first name and last name, replacing terms such changing "lt" to "liter".
+
+```{r}
+#install.packages("stringr")
+```
+
+### Mukbang
+
+Mukbang is a popular Korean live streaming trend where the audience watches people eating.   Data Science Live uses Mukbang as a way to give some time back to the audience to try out the coding in the live session.
+
+This episode's Mukbang segment is Texas BBQ brisket from [Snows BBQ](https://snowsbbq.com/) in Lexington, TX.   It is considered one of the top 3 BBQ in the state by [Texas Monthly](https://www.texasmonthly.com/bbq/) magazine's BBQ editor, Daniel Vaughn.
+
+![Snows BBQ beef brisket, wild rice mix, sauces](/post/2020-05-08-episode-2-install-packages_files/snowsbbq.jpg){width=512px height=512px}
+
+### Video, Episode 2: Install Packages
+
+```{r}
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/at5mq8d77J8\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+```
+

@@ -1,0 +1,103 @@
+---
+title: 'Episode 18: Creating New Variables'
+author: Mr. Campanell
+date: '2020-08-28'
+slug: creatingnewvariables
+description: Using the dplyr mutate function to create variables for running totals and percents.
+categories:
+  - R
+  - Video
+tags:
+  - mutate
+---
+
+## Episode 18: Creating New Variables
+
+This episode will teach you how to create new variables with the mutate function in dplyr by using examples for running totals and running percent.
+
+### Data file
+
+The United Nations High Commissioner for Refugees has open data about countries who accept refugees and asylum seekers and where the country refugees originated.   This episode uses this data to look at the number of refugees accepted by the United States and Canada.
+
+I've made the data frame is available here: [https://datasciencelive.com/data/UNdata.txt](https://datasciencelive.com/data/UNdata.txt)
+
+The data is in a pipe delimited text file.  We will use the read_delim function to bring it into R Studio.
+
+```{r}
+    library(dplyr)
+    library(readr)
+
+    #--------  Read UN Data  ------------------------#
+    UNdata <- read_delim("https://datasciencelive.com/data/UNdata.txt",delim="|")
+    
+```
+
+### Clean up data
+
+The data file from the United Nations had lengthy column names when it's read with read_delim.   We clean up the data to where we rename the columns and select the columns.   This example uses the column numbers at the reference.
+
+```{r}
+    refugees <- UNdata %>%
+                select(1:4) %>%
+                rename(country = 1,
+                       home_country = 2,
+                       year = 3,
+                       refugee_count = 4)
+    
+```
+
+### Running totals
+
+We will create a new variable to calculate the running total count of refugees and asylum seekers Canada accepted in 2016.   This includes filtering the data frame by country and year.   Then we sort the data frame by descending refugee count so we have the highest number of refugees by home country.   Finally, we use the mutate function to create a variable named total2016 to compute the running totals with the cumsum function.  
+
+```{r}
+    #----------------   Running total  -----------------------------------#
+    canada_tally_2016 <- refugees %>%
+                         filter(country == 'Canada' & year == 2016) %>%
+                         arrange(desc(refugee_count)) %>%
+                         mutate(total2016 = cumsum(refugee_count))
+    
+```
+
+### Running percents
+
+Running percents have more code because we need to compute the total number of refugees for the United States in 2016 and join that value to the data frame.  Once we accomplish the join, we create two new variables.   One is for the percent for each home country and the other is the running percent with the cumsum function.
+
+```{r}
+    
+    #------------   USA Data  -------------------#
+    us_2016 <-  refugees %>%
+                filter(country == 'United States' & year == 2016) %>%
+                arrange(desc(refugee_count))
+    
+    #-----------  Total USA refugees  -----------------#
+    total_us <- us_2016 %>%
+                group_by(country) %>%
+                summarise(total_us = sum(refugee_count))
+    
+    us_refugees <- inner_join(us_2016,total_us,by=c("country"))
+    
+    #-----------   Running percent  --------------------------------#
+    us_percent <- us_refugees %>%
+                  mutate(pct2016 = (refugee_count/total_us)*100) %>%
+                  mutate(run_pct_2016 = sum(refugee_count))
+    
+```
+
+### Analysis tip
+
+Review the data frames, canada_tally_2106 and us_percent.   Go to the last row and observe the value in the columns for the new running total and running percent variables we created.   
+
+### Mukbang: Seasoned french fries
+
+These french fries are seasoned with Old Bay spice. This is a regional flavor the Mid-Atlantic region of the United States.  The seasoning is traditionally used for steamed blue point crabs sourced from the Chesapeake Bay.  The flavor is gaining a broader following and it being used for other foods.   I used it on hand-cut french fries from russet potatoes.
+
+![Seasoned French Fries](/post/2020-08-28-creatingnewvariables.en_files/seasonedfries.jpg){width=512px height=384px}
+
+### Episode 18 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/rjE8fy2yAUE\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```

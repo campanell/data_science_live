@@ -1,0 +1,82 @@
+---
+title: 'Episode 9: Working With Dates'
+author: Mr. Campanell
+date: '2020-06-28'
+slug: workingwithdates
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 9: Working with dates
+
+This episode will focus on the basics of the tidyverse lubridate package which is created to handle date data types.
+
+Working with dates is important if you have to work with data that has date and time elements and they are crucial to do effective analysis.  Some examples are computer systems logs or financial transaction logs.
+
+###  Create some dates
+
+These code examples demonstrate how to create dates for today, yesterday, and last week (7 days ago).
+
+```{r}
+library(lubridate)
+
+#-------------  Create some dates  -----------------#
+today <- today()
+yesterday <- today - 1
+last_week <- today - 7
+
+
+```
+
+### Creating custom dates
+
+There are times when you already know the date you need.  This could be an event, holiday, promotion, or some important occasion.   The ymd function will allow you to create these dates.
+
+```{r}
+#--------------  Create dates with two different date formats  ------------#
+dashfmt <- ymd("2020-01-01")
+nodash <- ymd("20200101")
+
+```
+
+### Working with a timestamp
+
+Timestamps are common in most log data.   The core components are generally date, hour, minute, second.   The lubridate package has functions to extract these components from timestamps.
+
+```{r}
+#----------- Working with Timestamp  -------------#
+stamp <- now()
+date(stamp)
+hour(stamp)
+minute(stamp)
+second(stamp)
+
+```
+
+###  Quirky features
+
+Lubridate has a few quirky functions such as a leap year boolean and identify the calendar quarter which is important for public financial reporting.  
+
+```{r}
+#-------- quirky features  ----------------#
+leap_year(today)
+quarter(today)
+
+```
+
+
+### Mukbang
+
+I have a homemade chicken vegetable soup.  It's mostly vegetables.  On the side is tortilla chips and avocado slices which I like to put in this soup.
+
+![Chicken vegetable soup with tortilla chips and avocado](/post/2020-06-28-workingwithdates.en_files/chickenvegetablesoup.jpg){width=512px height=384px}
+
+### Episode 9 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/xwtkAv5o6lw\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```

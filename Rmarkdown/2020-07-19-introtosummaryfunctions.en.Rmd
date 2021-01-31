@@ -1,0 +1,111 @@
+---
+title: 'Episode 12: Intro to Summary Functions'
+author: Mr. Campanell
+date: '2020-07-19'
+slug: introtosummaryfunctions
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 12: Summary Functions
+
+This introduction to summary functions is to learn about the basic summary functions of averages, maximum values, and frequency counts.  Summary functions, also known a descriptive statistics, are the most common used functions for analytical reporting in all kinds of organizations.
+
+The key concept for summary functions in dplyr is they operate on columns.  
+
+###  Read data file
+
+We return back to the OECD fertility rate data set which we have used in previous episodes.   The data is in an Excel file format and it is used as a report.   The are title headers and footers in the data.   We will use some cleaning techniques to remove these report titles.   More details about cleaning Excel files are in ["https://datasciencelive.com/post/2020/05/22/episode4cleanexceldata/"](Episode 4: Clean Excel Data) blog post & video.  
+
+The source data can be found here: [https://datasciencelive.com/data/oecd.xls](https://datasciencelive.com/data/oecd.xls)
+
+We are going to select on the starting decade years using the select helper function, ends_with.
+
+```{r}
+library(dplyr)
+library(readxl)
+
+#---------  Read data ------------------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls",skip=3,n_max=42) %>%
+        rename(country = 2) %>%
+        select(country,ends_with('0'))
+
+```
+
+###  Maximum value  
+
+Our first example is to get the highest value for fertility rate in the year 2000.
+
+```{r}
+#-------   Highest fertility rate in 2000  -------------#
+max_2000 <- oecd %>%
+            summarise(max_rate = max(`2000`))
+
+```
+
+The problem here is that it does not provide any context.   All I have is one row and one column with a number.
+
+To get more context about the country that has the highest fertility rate, we use the filter function combined with the max summary function.
+
+```{r}
+
+max_2000_all <- oecd %>%
+                filter(`2000` == max(`2000`))
+
+```
+
+### Average value
+
+To obtain the average fertility rate in the year 2000, we will use the mean summary function.
+
+```{r}
+
+#----------   Average fertility rate in 2000  -----------#
+avg_2000 <- oecd %>%
+            summarise(avg_rate = mean(`2000`))
+
+```
+
+This is same as before, we have a number and no context.
+
+We will use the filter function and combine it with the mean function to find the countries with fertility rates below the average fertility rate in our data frame.
+
+```{r}
+
+#--------   Countries below average fertitlity rate in 2000  ----------#
+below_avg <- oecd %>%
+             filter(`2000` < mean(`2000`)) %>%
+             arrange(`2000`)
+
+```
+
+###  Frequency counts
+
+We are counting the number of records for the year 2000.
+
+```{r}
+#----------  Count number of records   ---------------------#
+n_recs <- oecd %>%
+          select(`2010`) %>%
+          summarise(freq = n()) 
+
+```
+
+###  Mukbang
+
+Today's mukbang is pasta with spicy Italian sausage in a red sauce.   The red sauce is South American, Italian-style because heavy cream is added.   This is popular in Brazil and Argentina.
+
+![Italian pasta, South American style](/post/2020-07-19-introtosummaryfunctions.en_files/southamericanpasta.jpg){width=512px height=384px}
+
+
+### Episode 12 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/LhxywXNt6iU\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```
+
+

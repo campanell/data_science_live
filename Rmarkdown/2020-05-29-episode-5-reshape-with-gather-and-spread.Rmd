@@ -1,0 +1,109 @@
+---
+title: Episode 5 Pivot Data Frames
+author: Mr. Campanell
+date: '2020-05-29'
+slug: episode5pivotdataframes
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 5: Reshape with pivot_wider & pivot_longer
+
+The tidyr package has two core functions to reshape your data frame.  These two packages will allows us to shape our data in a format to do visualizations for our next episode.
+
+### Data: OECD fertility rates by country.
+
+We will continue to use the OECD fertility rates by country data set which we started using in Episode 3.  
+
+This episode uses [Total Fertility Rates.  Download the file here](https://www.oecd-ilibrary.org/total-fertility-rates_5k4dpmzrg4nr.xls?itemId=%2Fcontent%2Fcomponent%2Ffactbook-2013-table9-en&mimeType=vnd.ms-excel) 
+
+### R Libraries
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyr)
+```
+
+
+### Read the OECD data
+
+We will use the code from Episode 4 to read and clean the Excel file from the OECD.  
+
+I have downloaded and renamed the Excel file.  It is stored in my Downloads folder on my PC.   You will need to change the folder/path to where you saved the download on your computer.
+
+```{r}
+#-------------  Read OECD File  -------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls",skip=3,n_max=42) %>%
+        rename(country = 2)
+
+```
+
+### Carry forward 2009 data
+
+The analysis data set is to keep the data for each of the decades in the data frame. There is some data lag for the 2010 data.   In these cases where 2010 data is missing, we will carry forward the 2009 data.   Sometimes referred to as last observation carried forward.
+
+We use the dplyr if_else function to carry forward the 2009 data values on the missing 2010 values. 
+
+```{r}
+
+#-------  Carry forward 2009 value   ----------------#
+oecd_cf <- oecd %>%
+           mutate(`2010` = if_else(is.na(`2010`)==TRUE,`2009`,`2010`))
+
+```
+
+### Use the five starting decade columns
+
+We are going back to Episode 3 and use the select function and the ends_with helper to select all the columns ending with a zero.
+
+```{r}
+#--------  Select the decades   ----------------#
+decades <- oecd_cf %>%
+           select(country, ends_with('0'))
+```
+
+###  Reshape with pivot_longer
+
+Pivot tables in Excel are considered advanced functionality.  The tidyr package has two functions which allows you to create pivot tables in R.
+
+Pivot_longer will transform your data frame by converting the columns to rows.  The function used to be called gather.
+
+```{r}
+#-------  Reshape data with pivot_longer  -----------------#
+new_oecd <- decades %>%
+            pivot_longer(ends_with('0'),names_to="year",values_to = "rate")
+
+```
+
+
+### Reshape with pivot_wider
+
+Pivot_wider will transform the data frame we transformed with pivot_longer to a data frame where the columns are the country names.  Having the data frame in this format will allow us to do visualizations of a country's fertility rates over time.
+
+Pivot_wider will transform the data frame by converting a row to columns.   The function used to be called spread
+
+```{r}
+#---------  Reshape again with pivot_wider ------------------#
+final_oecd <- new_oecd %>%
+              pivot_wider(names_from = country,values_from=rate)
+
+```
+
+
+### Mukbang
+
+My brother-in-law, Chef Lou, cooked this wonderful cochinita pibil.   It's a slow cooked pork roast with flavorful spices slow cooked inside banana leaves.
+
+I created a taco with corn tortilla, avocado, cilantro, and some juice of lime.
+
+![Cochinita Pibil from Chef Lou of Flipstixx](/post/2020-05-29-episode-5-reshape-with-gather-and-spread_files/pibil.jpg){width=512px height=384px}
+
+### Episode 5 Video Tutorial
+
+```{r}
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/1W7rdignJGw\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+```
+
+

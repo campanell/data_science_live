@@ -1,0 +1,75 @@
+---
+title: 'Episode 11: Bind Data Frames'
+author: Mr. Campanell
+date: '2020-07-10'
+slug: binddataframes
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 11: Bind data frames
+
+We continue with more dplyr functions.  This week is binding data frames with the functions, bind_rows and bind_columns.
+
+These are data frame concatenation functions.  The functions append rows and columns of data frames.  
+
+###  Read data file
+
+I created two data frames which we can use for the binding functions.   The source is from the International Monetary Fund.   I have done a little tidy actions on the source data to make them ready.
+
+```{r}
+library(dplyr)
+library(readr)
+
+#---------  Read data ------------------------#
+spain_cpi_yoy <- read_csv("https://datasciencelive.com/data/spain_cpi_yoy.csv")
+netherlands_cpi_yoy <- read_csv("https://datasciencelive.com/data/netherlands_cpi_yoy.csv")
+
+```
+
+### Bind rows
+
+My best practice is to make sure the columns are the same in each of the data frames when I bind the rows.
+
+```{r}
+
+#-------- Bind rows  ------------------------#
+all_rows <- bind_rows(spain_cpi_yoy,netherlands_cpi_yoy)
+
+```
+
+### Bind columns.
+
+I need to do a little bit of data frame tidy for the bind columns.   Here, I would like to have columns for the year and the CPI year over year values for Spain and The Netherlands.   I need to select my columns and rename the columns which hold the values.
+
+```{r}
+
+netherlands <- netherlands_cpi_yoy %>%
+               select(year, cpi_yoy) %>%
+               rename(netherlands_cpi = cpi_yoy)
+
+spain <- spain_cpi_yoy %>%
+         select(cpi_yoy) %>%
+         rename(spain_cpi = cpi_yoy)
+
+#---------- Bind columns -------------------#
+all_cols <- bind_cols(netherlands,spain)
+
+```
+
+### Mukbang
+
+Celebrating streaming live on Afreeca TV, I have Korean banchan.  It consists of fermented vegetables which includes bean sprouts, eggplant, radish, and the national Korean dish, kimchee.
+
+![Korean banchan](/post/2020-07-10-binddataframes.en_files/banchan.jpg){width=512px height=384px}
+
+### Episode 11 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/Jy9LDKMcrWQ\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```
+

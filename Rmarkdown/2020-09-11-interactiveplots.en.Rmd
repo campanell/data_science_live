@@ -1,0 +1,118 @@
+---
+title: 'Episode 19: Interactive Plots'
+author: Mr. Campanell
+date: '2020-09-11'
+slug: interactiveplots
+categories:
+  - R
+  - Video
+tags: []
+---
+## Episode 19: Interactive Plots
+
+This episode is a new direction for Data Science Live.   Mr. Campanell will show you how to create interactive plots using the plotly package.  In addition, he will wander around the plot looking at outliers, analyzing the data, and building hypotheses, looking at what stories the plot is telling.   This includes the data within the outliers and data that is missing in the outliers (hint: watch the video)
+
+The reason for this new direction is many R language tutorial videos focus on the programming using the stock data frames within the package.  However, they miss the crucial concept of what data science is all about and that is the analysis of the data.  
+
+One of the key qualities for a high performing data scientist is curiosity.  It is curiosity about the stories that are hiding in the data and how you can make them come to life.   It is this curiosity why Mr. Campanell brings varied data sources to the video episodes instead of using the stock data sets.
+
+### Data file
+
+The United Nations High Commissioner for Refugees has open data about countries who accept refugees and asylum seekers and where the country refugees originated.   This episode uses this data to look at the number of refugees accepted by the United States and Canada.
+
+I've made the data frame is available here: [https://datasciencelive.com/data/UNdata.txt](https://datasciencelive.com/data/UNdata.txt)
+
+The data is in a pipe delimited text file.  We will use the read_delim function to bring it into R Studio.
+
+```{r}
+    library(dplyr)
+    library(readr)
+    library(plotly)
+
+    #--------  Read UN Data  ------------------------#
+    UNdata <- read_delim("https://datasciencelive.com/data/UNdata.txt",delim="|")
+    
+```
+
+### Clean up data
+
+The data file from the United Nations had lengthy column names when it's read with read_delim.   We clean up the data to where we rename the columns and select the columns.   This example uses the column numbers at the reference.
+
+```{r}
+    refugees <- UNdata %>%
+                select(1:4) %>%
+                rename(country = 1,
+                       home_country = 2,
+                       year = 3,
+                       refugee_count = 4)
+    
+```
+
+### First interactive plot
+
+We are going to create the plotly graph object using the plotly function and letting it assume it is a scatter plot.
+
+The first line in the code brings in the data frame, and declares the x and y variables on the plot.
+
+The plotly package is written in a lot of Javascript. The text argument is for the data to appear in the javascript onMouseOver command with the data values for the scatter plot point.   Using the paste command, we can add a html line break to put each data value on its own line.
+
+Finally, we want to identify the data points by the countries in the data frame using color argument.  In this case, it is the United States and Canada.
+
+```{r}
+    i_refugee <- plot_ly(data=refugees, x = ~year, y = ~refugee_count,
+                         text = paste(refugees$home_country,"</br>",refugees$refugee_count),
+                         color=refugees$country)
+    i_refugee
+    
+```
+
+### Adjusting the plot
+
+After the initial scatter plot, we observe there are extreme values prior to 1987 and there are fewer data points.   Mousing over the data points indicate the home country is aggregated to "Various".   We create a data frame to validate this assumption.
+
+```{r}
+    
+    #----------   Before 1987   -----------------------------#
+    prior_87 <- refugees %>%
+                filter(year <= 1987) %>%
+                arrange(desc(refugee_count))
+    
+```
+
+### Create data frame for interactive plot and analyze
+
+After our assumption is validated, we want to filter out all records where the home country is not aggregated as "Various".   The next step is to make the plot less crowded by reducing the data points.   In this case, we group the data by country and year and reduce it to the top 10 home countries.   Finally ungroup the data so it's a normal data frame.
+
+Copy and paste the plotly code from earlier and change the data frame from refugees to home_country.
+
+Please watch the video to see how Mr. Campanell walks through the outliers and analyzes the plot.
+
+```{r}
+    #-----------   Home country   ----------------------#
+    home_country <- refugees %>%
+                    filter(home_country != 'Various') %>%
+                    group_by(country,year) %>%
+                    top_n(10) %>%
+                    ungroup()
+
+    i_refugee <- plot_ly(data=home_country, x = ~year, y = ~refugee_count,
+                         text = paste(home_country$home_country,"</br>",home_country$refugee_count),
+                         color=home_country$country)
+    i_refugee
+        
+```
+
+### Mukbang: Dim Sum
+
+Today's mukbang is Chinese dim sum.  This dish it tofu skins with a pork filling.   The tofu skins have a wonderful chewy texture.
+
+![Dim sum ](/post/2020-09-11-interactiveplots.en_files/dimsum.jpg){width=512px height=384px}
+
+### Episode 19 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/YB3oOwxDkZg\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```
+

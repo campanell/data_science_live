@@ -1,0 +1,79 @@
+---
+title: 'Episode 13: String Functions'
+author: Mr. Campanell
+date: '2020-07-24'
+slug: stringfunctions
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 13: String Functions
+
+This is a introduction to string handling functions.  Pattern matching, string replacement, and sub string will the focus for this episode.
+
+We will use two quotes from Mahatma Gandhi as the string handling examples.
+
+```{r}
+library(stringr)
+
+#-------   Quotes from Mahatma Gandhi  -------------#
+quote1 <- "Be the change that you wish to see in the world."
+quote2 <- "Live as if you were to die tomorrow. Learn as if you were to live forever"
+
+```
+
+###  Pattern matching
+
+We are looking to find character occurrences when we do pattern matching.   The string detect function will return a boolean true or false value.
+
+I have used this function with conditional statements for text mining applications.
+
+These examples use string detection to find a word, a pair of terms, and when a term is not found in the string.
+
+```{r}
+#------------  Pattern Match   ---------------#
+match1 <- str_detect(quote1,'world')
+match2 <- str_detect(quote1,'you wish')
+no_match <- str_detect(quote1, 'forget')
+
+```
+
+### String replacement
+
+This example shows how to replace a single term and multiple terms within a string.
+
+```{r}
+#----------   Replace string  ----------------#
+today_string <- str_replace(quote2,"tomorrow","today")
+all_repl <- str_replace_all(quote2,"as if","like")
+
+```
+
+###  Substring   
+
+Substring function is cutting up a string and pulling out part of the string.   In this function, you have to declare the starting and ending position of the string part.   These positions are where the string gets cut up.
+
+```{r}
+#------------ Subset string term  -------------#
+change_term <- str_sub(quote1,1,19)
+
+```
+
+### Mukbang
+
+My brother-in-law, Chef Lou, of Flipstixx created this tandoori chicken dish with saffron basmati rice.   Looks beautiful, tastes wonderful.
+
+![tandoori chicken with saffron basmati rice](/post/2020-07-24-stringfunctions.en_files/tandorichicken.jpg){width=512px height=384px}
+
+
+
+### Episode 13 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/yNm92tWO7Ns\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```
+

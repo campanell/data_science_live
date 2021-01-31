@@ -1,0 +1,97 @@
+---
+title: 'Episode 4: Clean Excel Data'
+author: Mr. Campanell
+date: '2020-05-22'
+slug: episode4cleanexceldata
+categories:
+  - R
+  - Video
+tags:
+  - readxl
+  - dplyr
+  - Excel
+  - data cleaning
+  - tutorial
+  - data science live
+---
+
+## Episode 4: Clean Excel Data
+
+Excel is a very common format to store small data sets. Its legacy is to function as a spreadsheet with a purpose for business financial analysis.   
+
+Over time, it evolved as the desktop software package to enter and store data.  How the data is laid out and formatted in the spreadsheet is at the whim of the user who created it.   This leads to data that can be inconsistent.
+
+In many cases, a data scientist may be asked to perform an analysis and given data in multiple Excel files maintained by multiple people.   It presents challenges to aggregate all the data into a tidy format for analysis.
+
+This episode is focused on the package, readxl which helps the data scientist tidy up data in the Excel format.
+
+### Data: OECD fertility rates by country.
+
+We will continue to use the OECD fertility rates by country data set which we used in Episode 3.   The data set has some common issues you will find with Excel files used as published reports.
+
+This episode uses [Total Fertility Rates.  Download the file here](https://www.oecd-ilibrary.org/total-fertility-rates_5k4dpmzrg4nr.xls?itemId=%2Fcontent%2Fcomponent%2Ffactbook-2013-table9-en&mimeType=vnd.ms-excel)  
+
+### R libraries 
+
+```{r}
+library(readxl)
+library(dplyr)
+
+```
+
+###  Read data file
+
+The data is formatted as a .xls file.   This is an older Excel file format.  Current Excel format have the .xlsx file extension.  This is important because it helps us identify the correct readxl function to use.
+
+I have downloaded and renamed the Excel file.  It is stored in my Downloads folder on my PC.   You will need to change the folder/path to where you saved the download on your computer.
+
+```{r}
+#--------------  Read in File Look for issues  --------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls")
+
+```
+
+###  Remove the title headers in the file
+
+Data reports in Excel typically have titles in the first few rows.   We will want to remove these header rows in the file.   We will use the skip parameter in the readxl function to remove the first three rows.
+
+```{r}
+#-------------  Skip the first 3 rows   ---------------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls",skip=3)
+
+```
+
+###  Remove the footnotes at the bottom of the file
+
+Data reports from public agencies sometimes contain footnotes about the data. These are found on the last rows of the report.   They may also contain blank rows as spacers.   These will need to be removed.  We will use the n_max parameter in the readxl function to remove the footer rows.
+
+```{r}
+#-------------   Remove the last 2 rows   --------------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls",skip=3,n_max=42)
+
+```
+
+### Rename the 2nd column to country
+
+Using the dplyr function to rename the second column.  This is tricky because readxl default named the column ` ...2`.  Dots have special uses in the tidyverse ecosystem and it is difficult to use the rename function with this type of column name.   However, we can use the column number to rename the column.
+
+```{r}
+#-----------------  Rename 2nd column  -------------------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls",skip=3,n_max=42) %>%
+        rename(country = 2)
+
+```
+
+### Mukbang
+
+This week's mukbang is open face sandwiches.   I use a Persian flat bread called Lavash as the bread base.  One sandwich is a vegetarian with rapini, a sweet piquante red pepper, and blue cheese.   The other sandwich is hand cut pepperoni, olive oil & balsamic vinegar, pizza and parmesan reggiano cheese.
+
+![Open face flatbread sandwich](/post/2020-05-22-episode-4-clean-excel-data_files/flatbreads.jpg){width=512px height=384px}
+
+### Episode 4 Video Tutorial
+
+```{r}
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/8FhTfyb2z9Q\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+```
+
+

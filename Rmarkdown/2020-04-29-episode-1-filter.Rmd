@@ -1,0 +1,76 @@
+---
+title: 'Episode 1: Filter'
+author: Mr. Campanell
+date: '2020-05-01'
+categories:
+  - Video
+tags:
+  - data science live
+  - dplyr
+  - R
+  - tutorial
+slug: episode1filter
+---
+
+## Episode 1: Filter
+
+Welcome to the first episode of Data Science Live.   This season we will go over the fundamentals of the tidyverse in R.  We are going to review filter in the dplyr package.
+
+Filter is important when you have a specific rows in your data frame that you would like to focus on for analysis.  If you have a big data frame that holds everything, filter makes it easy to break it down into smaller data frames which are needed for the analysis.
+
+It can also be used to clean up your data frame when there are rows of data which you would like to remove.
+
+It is one of the most basic and useful tools within the dplyr package.
+
+### Example Data
+
+The data example is a file from the City of Seattle which holds data about all the public art in the city.  The data is available online through the open data government portal.   We will use the tidyverse readr package to get the data into R Studio.
+
+```{r}
+library(readr)
+
+#------   Get the data from the URL   -----------------#
+seattle_art <- read_csv("https://data.seattle.gov/api/views/j7sn-tdzk/rows.csv?accessType=DOWNLOAD")
+
+```
+
+### Filter, Part 1
+
+We are going create a data frame for all the public art installations in Seattle.   There are some duplicate records in this new data frame and we will remove them with the distinct() command.   The code uses a pipe expression *%>%*.  This is a handy tidyverse feature which takes the output from one line and and makes it the input in the next line.  When done properly, the pipe expression is very useful for writing readable elegant R code. 
+
+```{r}
+library(dplyr)
+
+#----------  Installations   -------------------------#
+installation <- seattle_art %>%
+                filter(classification == 'Installation') %>%
+                distinct()
+
+```
+
+### Filter, Part 2
+
+The next example is to build a data frame of public art which is classified as an environment.  My curious question is what is the difference between an installation and an environment?
+
+```{r}
+#-----------   Environments   --------------------------#
+environment <- seattle_art %>%
+               filter(classification == 'Environments')
+
+```
+
+### Mukbang
+
+This episode's mukbang is California pizza. It is a vegetarian pizza with marinated artichokes, roasted red peppers, mozzarella cheese, and feta cheese chunks with Greek oregano sprinkled on top.  The crust is a white pizza with olive oil and garlic.
+
+![california pizza cooked in cast iron skillet](/post/2020-04-29-episode-1-filter_files/california_pizza.jpg){width=512px height=512px}
+
+### Live Video Tutorial
+
+```{r}
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/8i256VnkOHo\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```
+
+
+

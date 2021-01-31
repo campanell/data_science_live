@@ -1,0 +1,94 @@
+---
+title: 'Episode 14: Ranking Data'
+author: Mr. Campanell
+date: '2020-07-31'
+slug: rankingdata
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 14: Ranking Data
+
+This is an introduction into ranking data with the dplyr functions, ntile and percent_rank.   Ranking data is useful when you have a column of continuous data and you would like to find a way to group the data from the column.
+
+These two functions give you this option.
+
+### Data set: Austin micromobility
+
+The data we will use for this episode is the micromobility data from the City of Austin in the state of Texas.   We will use the fromJSON function from the jsonlite package.  
+
+The function will query the Austin mobility API and return 1000 records.   The entire data set has 1.9 million records.   We are going to add the query variables at the end of the URL string to subset the July 2020 records.
+
+```{r}
+library(jsonlite)
+library(dplyr)
+
+#----- Load data from URL  ----------------#
+resp <- fromJSON(txt="https://data.austintexas.gov/resource/7d8e-dm7r.json?month=7&year=2020")
+
+```
+
+### Cleaning up the data
+
+Once we have pulled the records from the API call, we are going to reduce the data frame elements by selecting the columns we need.   The JSON response from the API call returns all the data as a character string, so we are going to need to convert two columns to continuous numeric values in order to use the ranking functions.
+
+The column trip_duration is recorded as seconds, and we would like to convert it to minutes so the data is more easily understood.
+
+```{r}
+
+micromobility <- resp %>%
+                 mutate(trip_distance = as.integer(trip_distance)) %>%
+                 mutate(duration_min = as.integer(trip_duration)/60) %>%
+                 select(device_id,vehicle_type,trip_distance,duration_min)
+
+```
+
+###  Bucket ranks
+
+The ntile function will take the trip duration in minutes and create three buckets with values 1,2,3 based on the value of trip duration.
+
+We will use bind_cols to merge the bucket ranks back to the main data frame.
+
+```{r}
+
+#------------  Bucket ranks ----------------------#
+buckets <- micromobility %>%
+           summarise(trip_group = ntile(duration_min,3))
+
+micro_buckets <- bind_cols(micromobility,buckets)
+
+```
+
+### Percent ranks
+
+The percent_rank function will take the trip duration in minutes and create a ranking based on the values into a percentile.  The percentile ranking is a number between 0 and 1.
+
+We will use bind_cols to merge the bucket ranks back to the main data frame.
+
+```{r}
+
+#----------------   Percent ranks  ------------------------------#
+pct_rank <- micromobility %>%
+            summarise(pct_rank = percent_rank(duration_min))
+
+pctbucket <- bind_cols(micromobility,pct_rank)
+
+```
+
+### Mukbang
+
+My brother-in-law, Chef Lou, of Flipstixx created a french dip sandwich. It is roasted beef with provolone cheese served on a baguette.  The au jus sauce is on the side for dipping.  
+
+I'm sorry I don't have a picture in the blog, but you will get to see how much I enjoyed this one in the video. 
+
+### Episode 14 Video Tutorial
+
+```{r}
+
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/1LUzWGSPJlc\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+
+```
+
+

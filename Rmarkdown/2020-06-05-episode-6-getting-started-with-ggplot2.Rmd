@@ -1,0 +1,106 @@
+---
+title: 'Episode 6: Getting Started with ggplot2'
+author: Mr. Campanell
+date: '2020-06-05'
+slug: gettingstartedwithggplot2
+categories:
+  - R
+  - Video
+tags: []
+---
+
+## Episode 6: Getting started with ggplot2
+
+ggplot2 is the widely used R package to create graphics.  It is based on concepts from the academic textbook "The Grammar of Graphics" by Leland Wilkinson.
+
+This theme for this episode is to create basic line graphs using ggplot2.  A typical simple ggplot2 graph consists of three components: data, an aesthetic, and a geometric object known as a geom.
+
+
+### Data: OECD fertility rates by country.
+
+We will continue to use the OECD fertility rates by country data set which we started using in Episode 3.  The data frames which we reshaped in Episode 5 will be used for the plots.
+
+This episode uses [Total Fertility Rates.  Download the file here](https://www.oecd-ilibrary.org/total-fertility-rates_5k4dpmzrg4nr.xls?itemId=%2Fcontent%2Fcomponent%2Ffactbook-2013-table9-en&mimeType=vnd.ms-excel) 
+
+Fertility rates are important for forecasting a country's population trends in the future with the assumption there is no net migration and unchanged mortality.  It can reflect a country's economic and social development, and can be very useful to help shape government policy.
+
+### R Libraries
+```{r}
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+```
+
+###  Reuse code from Episodes 3, 4 & 5
+
+This block contains the code used in previous episode of Data Science Live.   We will  use it to create our data frames used in the ggplot2 plots.
+
+```{r}
+
+#-------------  Read OECD File  -------------#
+oecd <- read_xls("c:/Users/Campanell/Downloads/oecd.xls",skip=3,n_max=42) %>%
+        rename(country = 2)
+
+#-------  Carry forward 2009 value   ----------------#
+oecd_cf <- oecd %>%
+           mutate(`2010` = if_else(is.na(`2010`)==TRUE,`2009`,`2010`))
+
+#--------  Select the decades   ----------------#
+decades <- oecd_cf %>%
+           select(country, ends_with('0'))
+
+#-------  Reshape data with pivot_longer  -----------------#
+new_oecd <- decades %>%
+            pivot_longer(ends_with('0'),names_to="year",values_to = "rate")
+
+#---------  Reshape again with pivot_wider ------------------#
+final_oecd <- new_oecd %>%
+              pivot_wider(names_from = country,values_from=rate)
+
+```
+
+### Single line plot
+
+Build a simple data frame with the five decades and one country.  Select the two columns on year and a country.   In this example, I will use Mexico from the final_oecd data frame.   This data frame is two columns and five rows.
+
+The plot is a single line plot.   For this simple data structure, I use group=1 to connect the dots with a line.
+
+```{r}
+#-----------  Mexico  -----------------------------#
+mexico <- final_oecd %>%
+          select(year,Mexico)
+
+#--------   Line graph  ------------------------------#
+ggplot(data=mexico, aes(x=year, y=Mexico, group=1)) +
+      geom_line() +
+      geom_point()
+```
+
+###  Multiple line plot
+
+We will use the new_oecd data frame to create a multiple line plot.   Filter on the two countries, Japan and Korea to build the ggplot data frame.   
+
+```{r}
+#------------  Two Countries   -----------------------#
+jk <- new_oecd %>%
+      filter(country %in% c('Japan','Korea'))
+
+#------  Plot both countries  ----------------------#
+ggplot(data=jk, aes(x=year, y=rate, group=country, shape=country)) +
+      geom_line() +
+      geom_point() 
+```
+
+
+### Mukbang
+
+I created homemade Chinese dumplings.   They are seasoned with garlic and online powder and the filling is a beef & pork mixture with cilantro.  It's my own invention, and not very typical of a Chinese dumpling that you may find in an Asian store.
+
+![homemade dumplings](/post/2020-06-05-episode-6-getting-started-with-ggplot2_files/homemade_dumplings.jpg){width=512px height=384px}
+
+### Episode 6 Video Tutorial
+
+```{r}
+htmltools::HTML("<iframe width=\"560\" height=\"315\" src=\"https://www.youtube.com/embed/QqOviIsjc2Q\" frameborder=\"0\" allow=\"accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture\" allowfullscreen></iframe>")
+```
